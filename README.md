@@ -1,21 +1,22 @@
 # Конфигурация сервера shadowsocks c плагином обфускации v2ray c использованием CDN Cloudflare
 Зашифрованный прокси позволяющий перенаправлять траффик клиента как обычный HTTPS к доменному имени за CDN Cloudflare
 
-* :one: Подготовка системы.
+Подготовка системы.
 Конфигурация реализована на **`Ubuntu 22.04`**. Предварительно настроен вход по **SSH key**. Создан новый пользователь, отключен вход root и вход по паролю. Изменен стандартный порт ssh на кастомный. Настроен файервол `UFW`, закрыты все порты на вход за исключением порта ***SSH*** и портов ***HTTPS (443)*** и ***HTTP (80)***.
-* :two: Апдейт и апгрейд системы
+## Установка `shadowsocks-rust`
+* :one: Апдейт и апгрейд системы
 ```bash
 sudo apt update && sudo apt upgrade -y
 ```
-* :three: Проверка наличия `wget` для загрузки
+* :two: Проверка наличия `wget` для загрузки
 ```bash
 sudo apt install wget
 ```
-* :four: Переход во временную папку
+* :three: Переход во временную папку
 ```bash
 cd /tmp
 ```
-* :five: Загрузка актуальной версии `shadowsock-rust`.  [Сдесь нужно выбрать shadowsocks-rust](https://github.com/shadowsocks/shadowsocks-rust/releases/ "список релизов shadowsocks") для своей архитектуры. Рекомедуется загружать версию с тегом `latest`.
+* :four: Загрузка актуальной версии `shadowsock-rust`.  [Сдесь нужно выбрать shadowsocks-rust](https://github.com/shadowsocks/shadowsocks-rust/releases/ "список релизов shadowsocks") для своей архитектуры. Рекомедуется загружать версию с тегом `latest`.
 ```bash
 dpkg --print-architecture # Определение архитектуры
 ```
@@ -24,19 +25,19 @@ dpkg --print-architecture # Определение архитектуры
 sudo wget https://github.com/shadowsocks/shadowsocks-rust\
 /releases/download/v1.14.3/shadowsocks-v1.14.3.x86_64-unknown-linux-gnu.tar.xz
 ```
-* :six: Распаковка скачанного архива
+* :five: Распаковка скачанного архива
 ```bash
 sudo tar -xf shadowsocks-v1.14.3.x86_64-unknown-linux-gnu.tar.xz
 ```
-* :seven: Копирование бинарного файла shadowsocks-rust в `/usr/local/bin`
+* :six: Копирование бинарного файла shadowsocks-rust в `/usr/local/bin`
 ```bash
 sudo cp ssserver /usr/local/bin
 ```
-* :eight: Создание папки `shadowsocks`
+* :seven: Создание папки `shadowsocks`
 ```bash
 sudo mkdir /etc/shadowsocks
 ```
-* :nine: Cоздание файла конифигурации `shadowsocks`
+* :eight: Cоздание файла конифигурации `shadowsocks`
 ```bash
 sudo nano /etc/shadowsocks/shadowsocks-rust.json
 ```
@@ -57,11 +58,60 @@ sudo nano /etc/shadowsocks/shadowsocks-rust.json
 "mode": "tcp_only"                  # Режим работы в TCP， UDP не поддерживается.
 }
 ```
-* :ten: Оптимизация конфигурации `sysctl` под `shadowsocks-rust`
+* :nine: Оптимизация конфигурации `sysctl` под `shadowsocks-rust`
 ```bash
 sudo nano /etc/sysctl.conf
 ```
-* :elevan: Применение изменений sysctl без перезанрузки
+* :one::zero: Применение изменений `sysctl` без перезагрузки
 ```bash
 sudo sysctl -p
 ```
+* :one::one: Контроль изменений `sysctl`
+```bash
+sudo sysctl net.ipv4.tcp_available_congestion_control
+```
+Вывод должен быть таким:
+`net.ipv4.tcp_available_congestion_control = reno cubic bbr`
+* :one::two: Cоздание системного юнита (daemon) `shadowsock-rust.service` для автозапуска сервера shadowsocks
+```bash
+sudo nano /usr/lib/systemd/system/shadowsocks-rust.service
+```
+Содержимое юнита
+```
+[Unit]
+Description=shadowsocks-rust service
+After=network.target
+[Service]
+ExecStart=/usr/local/bin/ssserver -c /etc/shadowsocks/shadowsocks-rust.json
+ExecStop=/usr/bin/killall ssserver
+Restart=always
+RestartSec=10
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=ssserver
+User=nobody
+Group=nogroup
+[Install]
+WantedBy=multi-user.target
+```
+* :one::three: Активация и старт демона `shadowsocks-rust`
+```bash
+sudo systemctl enable shadowsocks-rust && sudo systemctl start shadowsocks-rust
+```
+* :one::four: Проверка работы сервера ёshadowsocks-rustё
+```bash
+sudo systemctl status shadowsocks-rust
+```
+Вывод должен быть таким:
+```
+● shadowsocks-rust.service - shadowsocks-rust service
+     Loaded: loaded (/lib/systemd/system/shadowsocks-rust.service; enabled; vendor preset: enabled)
+     Active: active (running) since Wed 2022-11-23 20:44:29 +10; 1 day 20h ago
+   Main PID: 746 (ssserver)
+      Tasks: 11 (limit: 1030)
+     Memory: 14.9M
+        CPU: 1min 48.171s
+     CGroup: /system.slice/shadowsocks-rust.service
+             ├─746 /usr/local/bin/ssserver -c /etc/shadowsocks/shadowsocks-rust.json
+```
+**`Внимание!`** В случае ошибки необходимо строго проверить файл конфигурации, синтаксис, наличие кавычек и запятых в строках, также нужно проверить под какую *архитектуру* скачан архив `shadowsocks-rust`,  
