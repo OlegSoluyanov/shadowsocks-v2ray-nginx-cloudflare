@@ -45,7 +45,7 @@ sudo nano /etc/shadowsocks/shadowsocks-rust.json
 Первичная настройка конфигурации
 ```javascript
 {
-"server": "server ip",              # IP адрес сервера
+"server": "0.0.0.0",               # IP адрес сервера, по умолчанию указаны все интерфейсы
 "server_port": port,                # Кастомный порт сервера по выбору
 "password": "password",             # пароль
 "timeout": 300,                     # Желательно не более 600, время закрытия соединения
@@ -253,6 +253,56 @@ sudo nano etc/nginx/sites-available/default
 sudo nano /etc/nginx/nginx.conf
 ```
 
-Необходимо заменить файл `default` [новой версией](https://github.com/OlegSoluyanov/shadowsocks-v2ray-nginx-cloudflare/blob/02f50aeb22cbd5d3e03b5d62e5c877a16efad375/default.txt "новый файл default")
+Необходимо заменить файл `nginx.conf` [новой версией](https://github.com/OlegSoluyanov/shadowsocks-v2ray-nginx-cloudflare/blob/4eb039187ba9df83f09335211d7b3826eae44bfd/nginx.conft "новый файл nginx.conf")
+
+<details>
+<summary> ВНИМАНИЕ!: ..... ⬇️</summary>
+     
+* * Nginx будет выполнять все конфигурации указанные в диррективе `include`, в данной версии - все файлы из дирректории `/etc/nginx/conf.d` и `/etc/nginx/sites-available`. Если в `conf.d` есть другие файлы конфигурации нужно заккоментировать строку `include` c этой дирректорией
+* * Включить логгирование, расположение и название файла лога можно в блоке "Настройки логгирования"
+</details>
+
+* :six: Запрет входящих запросов напрямую в сервер shadowsocks по ip минуя `nginx`. (все запросы будут приходить по домену за cloudflare
+```bash
+sudo nano /etc/shadowsocks/shadowsocks-rust.json
+```
+
+В первой строке необходимо указать `"server": "127.0.0.1",` - так shadowsocks будет доступен только на `localhost`
+
+* :seven: Проверка корректности конфигурации `nginx`
+```bash
+sudo nginx -t
+```
+Вывод должен быть такой:
+
+```
+nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
+nginx: configuration file /etc/nginx/nginx.conf test is successful
+```
+
+Если в конфигурации есть ошибка nginx в выводе отобразит номер строки
+
+* :eight: Перезапуск `nginx` и вывод статуса
+```bash
+sudo systemctl restart nginx && sudo systemctl status nginx
+```
+<details>
+<summary>Вывод должен быть такой: (развернуть) ⬇️</summary>
+     
+```
+● nginx.service - A high performance web server and a reverse proxy server
+     Loaded: loaded (/lib/systemd/system/nginx.service; enabled; vendor preset: enabled)
+     Active: active (running) since Wed 2022-11-23 20:44:30 +10; 2 days ago
+       Docs: man:nginx(8)
+   Main PID: 787 (nginx)
+      Tasks: 2 (limit: 1030)
+     Memory: 18.4M
+        CPU: 3min 1.443s
+     CGroup: /system.slice/nginx.service
+             ├─787 "nginx: master process /usr/sbin/nginx -g daemon on; master_process on;"
+             └─788 "nginx: worker process" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" ""
+
+Nov 23 20:44:29 server name systemd[1]: Starting A high performance web server and a reverse proxy server...
+```
 
  
