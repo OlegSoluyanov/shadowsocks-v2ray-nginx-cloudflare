@@ -16,7 +16,7 @@ sudo apt install wget
 ```bash
 cd /tmp
 ```
-* :four: Загрузка актуальной версии `shadowsock-rust`.  [Сдесь нужно выбрать shadowsocks-rust](https://github.com/shadowsocks/shadowsocks-rust/releases/ "список релизов shadowsocks") для своей архитектуры. Рекомедуется загружать версию с тегом `latest`.
+* :four: Загрузка актуальной версии `shadowsock-rust`.  [Тут нужно выбрать `shadowsocks-rust`](https://github.com/shadowsocks/shadowsocks-rust/releases/ "список релизов shadowsocks") для своей архитектуры. Рекомедуется загружать версию с тегом `latest`.
 ```bash
 dpkg --print-architecture # Определение архитектуры
 ```
@@ -62,6 +62,7 @@ sudo nano /etc/shadowsocks/shadowsocks-rust.json
 ```bash
 sudo nano /etc/sysctl.conf
 ```
+Cодержимое [файла sysctl.conf](https://github.com/OlegSoluyanov/shadowsocks-v2ray-nginx-cloudflare/blob/8f9cf5cd1f5c40bcb24010052700903a58464b6c/sysctl.conf "дополнение sysctl.conf") необходимо добавить в конец файла открытого выше.
 * :one::zero: Применение изменений `sysctl` без перезагрузки
 ```bash
 sudo sysctl -p
@@ -114,4 +115,63 @@ sudo systemctl status shadowsocks-rust
      CGroup: /system.slice/shadowsocks-rust.service
              ├─746 /usr/local/bin/ssserver -c /etc/shadowsocks/shadowsocks-rust.json
 ```
-**`Внимание!`** В случае ошибки необходимо строго проверить файл конфигурации, синтаксис, наличие кавычек и запятых в строках, также нужно проверить под какую *архитектуру* скачан архив `shadowsocks-rust`,  
+**`Внимание!`** В случае ошибки необходимо строго проверить файл конфигурации, синтаксис, наличие кавычек и запятых в строках, также нужно проверить под какую *архитектуру* скачан архив `shadowsocks-rust`.
+## Установка плагина обфускации траффика `v2ray`
+* :one: Загрузка актуальной версии плагина v2ray. [Тут нужно выбрать `v2ray plugin`](https://github.com/shadowsocks/v2ray-plugin/releases/ "список релизов v2ray plugin") для своей архитектуры. Рекомедуется загружать версию с тегом `latest`.
+```bash
+sudo wget https://github.com/shadowsocks/v2ray-plugin/releases/download/v1.3.2/v2ray-plugin-linux-amd64-v1.3.2.tar.gz
+```
+* :two: Распаковка архива с плагином `v2ray`
+```bash
+sudo tar -xf v2ray-plugin-linux-amd64-v1.3.2.tar.gz
+```
+* :three: Перенос плагина в папку с shadowsocks переименование файла плагина в v2ray-plugin
+```bash
+sudo mv v2ray-plugin_linux_amd64 /etc/shadowsocks/v2ray-plugin
+```
+* :four: Установка прав файла плагина `v2ray` и возможности его подключения к привелигерованным портам
+```bash
+sudo setcap "cap_net_bind_service=+eip" /etc/shadowsocks/v2ray-plugin && sudo chmod +x /etc/shadowsocks/v2ray-plugin
+```
+* :five: Корректировка файла конфигурации `shadowsocks-rust.json` для работы с плагином `v2ray`
+```bash
+sudo nano /etc/shadowsocks/shadowsocks-rust.json
+```
+Необходимо добавить строки `plugin` с указанием пути к плагину и `plugin_opts` со значением `"server"` в конец файла. 
+```javascript
+{
+"server": "server ip",                        # IP адрес сервера
+"server_port": port,                          # Кастомный порт сервера по выбору
+"password": "password",                       # пароль
+"timeout": 300,                               # Желательно не более 600, время закрытия соединения
+"method": "chacha20-ietf-poly1305",           # Метод шифрования, при выборе исходить из уровня потребления ресурсов, можно остваить.
+"no_delay": true,
+"fast_open": true,                            # Быстрое открытие соединения на ядрах старше 3.16
+"reuse_port": true,                           # Ускоряет приемку пакетов, позволяет привязку к TCP 
+"workers": 1,                                 # Количество ядер доступных серверу
+"ipv6_first": true,                           # В случае поддержки сервером ipv6 - true, иначе - false
+"nameserver": "DNS url",                      # url предпочитаемого dns провайдера
+"mode": "tcp_only",                           # Режим работы в TCP， UDP не поддерживается.
+"plugin": "/etc/shadowsocks/v2ray-plugin",    # Путь к плагину
+"plugin_opts": "server"                       # Опция плагина, при использовании Сlouflare.
+}
+```
+* :six: Проверка работы `shadowsocks-rust` c плагином `v2ray`
+```bash
+sudo systemctl restart shadowsocks-rust && sudo systemctl status shadowsocks-rust
+```
+Вывод должен быть такой:
+```
+● shadowsocks-rust.service - shadowsocks-rust service
+     Loaded: loaded (/lib/systemd/system/shadowsocks-rust.service; enabled; vendor preset: enabled)
+     Active: active (running) since Wed 2022-11-23 20:44:29 +10; 1 day 21h ago
+   Main PID: 746 (ssserver)
+      Tasks: 12 (limit: 1030)
+     Memory: 14.9M
+        CPU: 1min 49.233s
+     CGroup: /system.slice/shadowsocks-rust.service
+             ├─746 /usr/local/bin/ssserver -c /etc/shadowsocks/shadowsocks-rust.json
+             └─766 /etc/shadowsocks/v2ray-plugin
+ ```
+ Нижняя строчка и статус active(runnung) показывает что плагин работает.
+ <br>**`Внимание!`** В случае ошибки, необходимо проверить синтаксис конфигурационнго файла и соответствие скачанной версии плагина архитектуре сервера.
