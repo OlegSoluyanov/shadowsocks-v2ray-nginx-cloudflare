@@ -173,5 +173,48 @@ sudo systemctl restart shadowsocks-rust && sudo systemctl status shadowsocks-rus
              ├─746 /usr/local/bin/ssserver -c /etc/shadowsocks/shadowsocks-rust.json
              └─766 /etc/shadowsocks/v2ray-plugin
  ```
- Нижняя строчка и статус active(runnung) показывает что плагин работает.
+ Нижняя строчка и статус ***active(runnung)*** показывает что плагин работает.
  <br>**`Внимание!`** В случае ошибки, необходимо проверить синтаксис конфигурационнго файла и соответствие скачанной версии плагина архитектуре сервера.
+ 
+ ## Установка и конфигурация веб сервера `Nginx` для работы с доменом проксируемым `CDN Cloudflare`
+ * :one: Установка сертификатов `Cloudflare` на сервер
+ ```bash
+ # Папка под сертификаты конкретного домена
+ sudo mkdir /etc/ssl/example_certs
+ ```
+ В папку example_certs необходимо установить:
+ 
+ - - `ssl` сертификат cloudflare, example.com.pem
+ * * `ssl key` сертификат cloudflare, example.com.key
+ * * сертификат `authenticated_origin_pull_ca` (опционально) - для [проксирования запросов к серверу только с IP адресов CDN Cloudflare](https://blog.cloudflare.com/protecting-the-origin-with-tls-authenticated-origin-pulls/ "описание функции")
+ * * `origin_ca_rsa_root` (trusted_certificate) Cloudflare (опционально) для включения функции [OCSP Stapling](https://blog.cloudflare.com/high-reliability-ocsp-stapling/ "описание функции")
+ * :two: Генерация параметра [DH (Диффи-Хеллмана)](https://tproger.ru/translations/diffie-hellman-key-exchange-explained/ "описание") для шифрования соединения.
+ ```bash
+sudo openssl dhparam -out /etc/ssl/example_certs/dhparams.pem 4096
+```
+* :three: Установка `nginx` и проверка статуса
+```bash
+sudo apt install nginx && sudo systemctl status nginx
+```
+Вывод должен быть такой:
+```
+● nginx.service - A high performance web server and a reverse proxy server
+     Loaded: loaded (/lib/systemd/system/nginx.service; enabled; vendor preset: enabled)
+     Active: active (running) since Wed 2022-11-23 20:44:30 +10; 2 days ago
+       Docs: man:nginx(8)
+   Main PID: 787 (nginx)
+      Tasks: 2 (limit: 1030)
+     Memory: 16.9M
+        CPU: 2min 32.561s
+     CGroup: /system.slice/nginx.service
+             ├─787 "nginx: master process /usr/sbin/nginx -g daemon on; master_process on;"
+             └─788 "nginx: worker process" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" ""
+
+Nov 23 20:44:29 215927.fornex.cloud systemd[1]: Starting A high performance web server and a reverse proxy server...
+```
+* :four: Редактирование конфигурационного файла `nginx` `default` в дирректории `sites-available`
+```bash
+sudo nano etc/nginx/sites-available/default
+```
+Необходимо заменить файл default новой версией для проксирования трффика через домен за СDN Cloudflare
+ 
