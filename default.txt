@@ -7,18 +7,18 @@ server {
 
 	# Блок ssl сертификатов
 	
-	ssl_certificate /etc/ssl/sayonara_certs/sayonara_cert.pem;
-	ssl_certificate_key /etc/ssl/sayonara_certs/sayonara_key.key;
-	ssl_dhparam /etc/ssl/sayonara_certs/dhparams.pem;
+	ssl_certificate /etc/ssl/example_certs/example_cert.pem;
+	ssl_certificate_key /etc/ssl/example_certs/example_key.key;
+	ssl_dhparam /etc/ssl/example_certs/dhparams.pem;
 
 	# Опционально, функция приема запросов только с IP адресов Cloudflare
 
-	ssl_client_certificate /etc/ssl/sayonara_certs/authenticated_origin_pull_ca.pem;
+	ssl_client_certificate /etc/ssl/example_certs/authenticated_origin_pull_ca.pem;
 	ssl_verify_client on;
 
 	# Опционально, функция проверки валидности сертификатов OCSP stapling
 
-	ssl_trusted_certificate /etc/ssl/sayonara_certs/origin_ca_rsa_root.pem;
+	ssl_trusted_certificate /etc/ssl/example_certs/origin_ca_rsa_root.pem;
 	ssl_stapling on;
 	ssl_stapling_verify on;
  
