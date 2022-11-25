@@ -100,7 +100,7 @@ WantedBy=multi-user.target
 ```bash
 sudo systemctl enable shadowsocks-rust && sudo systemctl start shadowsocks-rust
 ```
-* :one::four: Проверка работы сервера ёshadowsocks-rustё
+* :one::four: Проверка работы сервера `shadowsocks-rust`
 ```bash
 sudo systemctl status shadowsocks-rust
 ```
