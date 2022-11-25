@@ -3,7 +3,8 @@
 
 Подготовка системы.
 Конфигурация реализована на **`Ubuntu 22.04`**. Предварительно настроен вход по **SSH key**. Создан новый пользователь, отключен вход root и вход по паролю. Изменен стандартный порт ssh на кастомный. Настроен файервол `UFW`, закрыты все порты на вход за исключением порта ***SSH*** и портов ***HTTPS (443)*** и ***HTTP (80)***.
-## Установка `shadowsocks-rust`
+
+## 🔲Установка `shadowsocks-rust`
 * :one: Апдейт и апгрейд системы
 ```bash
 sudo apt update && sudo apt upgrade -y
@@ -103,7 +104,9 @@ sudo systemctl enable shadowsocks-rust && sudo systemctl start shadowsocks-rust
 ```bash
 sudo systemctl status shadowsocks-rust
 ```
-Вывод должен быть таким:
+<details>
+<summary>Вывод должен быть таким: (развернуть) ⬇️</summary>
+     
 ```
 ● shadowsocks-rust.service - shadowsocks-rust service
      Loaded: loaded (/lib/systemd/system/shadowsocks-rust.service; enabled; vendor preset: enabled)
@@ -115,8 +118,10 @@ sudo systemctl status shadowsocks-rust
      CGroup: /system.slice/shadowsocks-rust.service
              ├─746 /usr/local/bin/ssserver -c /etc/shadowsocks/shadowsocks-rust.json
 ```
+</details>    
+     
 **`Внимание!`** В случае ошибки необходимо строго проверить файл конфигурации, синтаксис, наличие кавычек и запятых в строках, также нужно проверить под какую *архитектуру* скачан архив `shadowsocks-rust`.
-## Установка плагина обфускации траффика `v2ray`
+## 🔲Установка плагина обфускации траффика `v2ray`
 * :one: Загрузка актуальной версии плагина v2ray. [Тут нужно выбрать `v2ray plugin`](https://github.com/shadowsocks/v2ray-plugin/releases/ "список релизов v2ray plugin") для своей архитектуры. Рекомедуется загружать версию с тегом `latest`.
 ```bash
 sudo wget https://github.com/shadowsocks/v2ray-plugin/releases/download/v1.3.2/v2ray-plugin-linux-amd64-v1.3.2.tar.gz
@@ -160,7 +165,9 @@ sudo nano /etc/shadowsocks/shadowsocks-rust.json
 ```bash
 sudo systemctl restart shadowsocks-rust && sudo systemctl status shadowsocks-rust
 ```
-Вывод должен быть такой:
+<details>
+<summary>Вывод должен быть такой: (развернуть) ⬇️</summary>
+     
 ```
 ● shadowsocks-rust.service - shadowsocks-rust service
      Loaded: loaded (/lib/systemd/system/shadowsocks-rust.service; enabled; vendor preset: enabled)
@@ -173,10 +180,12 @@ sudo systemctl restart shadowsocks-rust && sudo systemctl status shadowsocks-rus
              ├─746 /usr/local/bin/ssserver -c /etc/shadowsocks/shadowsocks-rust.json
              └─766 /etc/shadowsocks/v2ray-plugin
  ```
+ </details>     
+     
  Нижняя строчка и статус ***active(runnung)*** показывает что плагин работает.
  <br>**`Внимание!`** В случае ошибки, необходимо проверить синтаксис конфигурационнго файла и соответствие скачанной версии плагина архитектуре сервера.
  
- ## Установка и конфигурация веб сервера `Nginx` для работы с доменом проксируемым `CDN Cloudflare`
+ ## 🔲 Установка и конфигурация веб сервера `Nginx` для работы с доменом проксируемым `CDN Cloudflare`
  * :one: Установка сертификатов `Cloudflare` на сервер
  ```bash
  # Папка под сертификаты конкретного домена
@@ -196,7 +205,9 @@ sudo openssl dhparam -out /etc/ssl/example_certs/dhparams.pem 4096
 ```bash
 sudo apt install nginx && sudo systemctl status nginx
 ```
-Вывод должен быть такой:
+<details>
+<summary>Вывод должен быть такой: (развернуть) ⬇️</summary>
+     
 ```
 ● nginx.service - A high performance web server and a reverse proxy server
      Loaded: loaded (/lib/systemd/system/nginx.service; enabled; vendor preset: enabled)
@@ -210,12 +221,15 @@ sudo apt install nginx && sudo systemctl status nginx
              ├─787 "nginx: master process /usr/sbin/nginx -g daemon on; master_process on;"
              └─788 "nginx: worker process" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" ""
 
-Nov 23 20:44:29 215927.fornex.cloud systemd[1]: Starting A high performance web server and a reverse proxy server...
+Nov 23 20:44:29 server name systemd[1]: Starting A high performance web server and a reverse proxy server...
 ```
+</details>   
+     
 * :four: Редактирование конфигурационного файла `nginx` `default` в дирректории `sites-available`
 ```bash
 sudo nano etc/nginx/sites-available/default
 ```
+
 Необходимо заменить файл `default` [новой версией](https://github.com/OlegSoluyanov/shadowsocks-v2ray-nginx-cloudflare/blob/02f50aeb22cbd5d3e03b5d62e5c877a16efad375/default.txt "новый файл default") для проксирования трффика через домен example.com размещенный за `СDN Cloudflare`
 
 **`Внимание!`**
@@ -224,10 +238,21 @@ sudo nano etc/nginx/sites-available/default
 * * `example_cert.pem` необходимо заменить на название файла своего `ssl` сертификата
 * * `example_key.key` необходимо заменить на название файла своего `ssl key` сертификата
 
-**`Возможные ошибки:`**
+<details>
+<summary> Возможные ошибки: ..... ⬇️</summary>
+     
 * * Неправильный `путь` до любого из сертификатов
 * * Неправильные `имена файлов` сертификатов
 * * Неправильный `порт` сервера shadowsocks В диррективе `proxy_pass`
 * * синтаксические ошибки в файле
 * * настройки домена в кабинете `cloudflare`
+</details>
+
+* :five: Редактирование дефолтного файла конфигурации `nginx.conf` в дирректории `nginx`
+```bash
+sudo nano /etc/nginx/nginx.conf
+```
+
+Необходимо заменить файл `default` [новой версией](https://github.com/OlegSoluyanov/shadowsocks-v2ray-nginx-cloudflare/blob/02f50aeb22cbd5d3e03b5d62e5c877a16efad375/default.txt "новый файл default")
+
  
