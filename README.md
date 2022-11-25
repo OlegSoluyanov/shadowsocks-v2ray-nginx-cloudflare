@@ -216,9 +216,18 @@ Nov 23 20:44:29 215927.fornex.cloud systemd[1]: Starting A high performance web 
 ```bash
 sudo nano etc/nginx/sites-available/default
 ```
-Необходимо заменить файл `default` [новой версией](https://github.com/OlegSoluyanov/shadowsocks-v2ray-nginx-cloudflare/blob/13340392a0b73d5cf73da936880cf307260be996/default.txt "новый файл default") для проксирования трффика через домен example.com размещенный за `СDN Cloudflare`
-Внимание! 
+Необходимо заменить файл `default` [новой версией](https://github.com/OlegSoluyanov/shadowsocks-v2ray-nginx-cloudflare/blob/02f50aeb22cbd5d3e03b5d62e5c877a16efad375/default.txt "новый файл default") для проксирования трффика через домен example.com размещенный за `СDN Cloudflare`
+
+**`Внимание!`**
 * * `example.com` нужно заменить на свое доменное имя размещенное за **cloudflare**
 * * `xxxxx` в диррективе `location` необходимо заменить на `номер порта` из строки `server port` конфигурационного файла **/etc/shadowsocks/shadowsocks-rust.json**
-* * 
+* * `example_cert.pem` необходимо заменить на название файла своего `ssl` сертификата
+* * `example_key.key` необходимо заменить на название файла своего `ssl key` сертификата
+
+**`Возможные ошибки:`**
+* * Неправильный `путь` до любого из сертификатов
+* * Неправильные `имена файлов` сертификатов
+* * Неправильный `порт` сервера shadowsocks В диррективе `proxy_pass`
+* * синтаксические ошибки в файле
+* * настройки домена в кабинете `cloudflare`
  
