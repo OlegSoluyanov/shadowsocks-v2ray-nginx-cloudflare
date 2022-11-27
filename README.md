@@ -402,9 +402,11 @@ Nov 23 20:44:29 server name systemd[1]: Starting A high performance web server a
 
 ## ☑️ Настройка Shadowsocks клиентов
 
+:one: Клиент `Shadowsocks для Windows` 
+
 <details>
-   
-<summary>:one: Клиент `Shadowsocks для Windows`</summary>
+     
+<summary>Развернуть</summary>
    
 * Необходимо скачать [последнюю версию клиента `Shadowsocks for windows`](https://github.com/shadowsocks/shadowsocks-windows/releases "скачать shadowsocks for windows") 
 * Необходимо установить в папку с shadowsocks for windows [плагин `v2ray`](https://github.com/shadowsocks/v2ray-plugin/releases "скачать v2ray") c архитектурой windows amd64.
@@ -421,9 +423,11 @@ Nov 23 20:44:29 server name systemd[1]: Starting A high performance web server a
  <br>При настройке Global весь траффик устройства идет через shadowsocks, для проксирования отдельных ресурсов можно использовать PAC файл например [отсюда](https://4pda.to/forum/index.php?s=&showtopic=744431&view=findpost&p=118717912).
  </details>
  
- <details>
+   :two: Настройка `shadowsocks для android`
  
-   <summary> :two: Настройка `shadowsocks для android`</summary>
+   <details>
+   
+   <summary> Развернуть </summary>
    
  * Необходимо скачать [Shadowsocks for android из Play store](https://4pda.to/forum/index.php?s=&showtopic=744431&view=findpost&p=118717912 "скачать")
  * Необходимо скачать [плагин v2ray](https://play.google.com/store/apps/details?id=com.github.shadowsocks.plugin.v2ray "скачать")
