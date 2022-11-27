@@ -1,4 +1,6 @@
 ![image](https://dsm01pap006files.storage.live.com/y4mXQf_hqeuTt-qKl8wdOjR2IPzzZ4sRmPGuZFQumqTQvzSp1wQXSRoxqKhUuHPCXjpI3SFMcWgfmX-PD7dkScYK_lSPzqOK6XSix-jQjajk8vTh51SrY1uaNIjy1tza0SeUVpHJaJ1d3tg7hEisQpVD60wP0yZX-v3tZBpxljgtXBKDcq2fbLEraHHdaWjbXV0?width=1804&height=263&cropmode=none)
+<br>
+
 # Конфигурация сервера `shadowsocks` c плагином обфускации `v2ray` c использованием `CDN Cloudflare`
 
 Зашифрованный прокси скрытый за обычным доменом с ip адресом сети Cloudflare
@@ -8,10 +10,12 @@
 
 Подготовка системы.
 Конфигурация реализована на **`Ubuntu 22.04`**. Предварительно настроен вход по **SSH key**. Создан новый пользователь, отключен вход root и вход по паролю. Изменен стандартный порт ssh на кастомный. Настроен файервол `UFW`, закрыты все порты на вход за исключением порта ***SSH*** и портов ***HTTPS (443)*** и ***HTTP (80)***.
+<br>
+<br>
 
-
-
+---
 ## ☑️ Размещение домена за `CDN Cloudflare` 
+---
 
 <details>
 <summary> Настройка домена в Cloudflare:⬇️</summary>
@@ -89,15 +93,17 @@
 В итоге проксирование домена сетью Сlouflare должно быть активно, выпущены SSL Edge сертификат и ключ к нему. Опционально - корневой сертификат Cloudflare и сертификат пула адресов Cloudflare.
 
 </details>
+<br>
+<br>
 
-
-
+---
 ## ☑️ Установка `shadowsocks-rust`
-
+---
 * :one: Апдейт и апгрейд системы
 ```bash
 sudo apt update && sudo apt upgrade -y
 ```
+
 * :two: Проверка наличия `wget` для загрузки
 ```bash
 sudo apt install wget
@@ -210,9 +216,13 @@ sudo systemctl status shadowsocks-rust
 </details>    
      
 **`Внимание!`** В случае ошибки необходимо строго проверить файл конфигурации, синтаксис, наличие кавычек и запятых в строках, также нужно проверить под какую *архитектуру* скачан архив `shadowsocks-rust`.
+<br>
+<br>
 
-
+---
 ##  ☑️ Установка плагина обфускации траффика `v2ray`
+---
+
 * :one: Загрузка актуальной версии плагина v2ray. [Тут нужно выбрать `v2ray plugin`](https://github.com/shadowsocks/v2ray-plugin/releases/ "список релизов v2ray plugin") для своей архитектуры. Рекомедуется загружать версию с тегом `latest`.
 ```bash
 sudo wget https://github.com/shadowsocks/v2ray-plugin/releases/download/v1.3.2/v2ray-plugin-linux-amd64-v1.3.2.tar.gz
@@ -276,7 +286,10 @@ sudo systemctl restart shadowsocks-rust && sudo systemctl status shadowsocks-rus
  Нижняя строчка и статус ***active(runnung)*** показывает что плагин работает.
  <br>**`Внимание!`** В случае ошибки, необходимо проверить синтаксис конфигурационнго файла и соответствие скачанной версии плагина архитектуре сервера.
  
+ ---
  ## ☑️ Установка и конфигурация веб сервера `Nginx` для работы с доменом проксируемым `CDN Cloudflare`
+ ---
+ 
  * :one: Установка сертификатов `Cloudflare` на сервер
  ```bash
  # Папка под сертификаты конкретного домена
@@ -397,10 +410,12 @@ Nov 23 20:44:29 server name systemd[1]: Starting A high performance web server a
 ```
 </details>
 Веб сервер Nginx настроен на проксирование запросов через домен example.com
+<br>
+<br>
 
-
-
+---
 ## ☑️ Настройка Shadowsocks клиентов
+---
 
 :one: Клиент `Shadowsocks для Windows` 
 
