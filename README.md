@@ -394,7 +394,10 @@ Nov 23 20:44:29 server name systemd[1]: Starting A high performance web server a
 
 ## ☑️ Настройка Shadowsocks клиентов
 
-* :one: Клиент `Shadowsocks для Windows`
+<details>
+   
+<summary>:one: Клиент `Shadowsocks для Windows`</summary>
+   
 * Необходимо скачать [последнюю версию клиента `Shadowsocks for windows`](https://github.com/shadowsocks/shadowsocks-windows/releases "скачать shadowsocks for windows") 
 * Необходимо установить в папку с shadowsocks for windows [плагин `v2ray`](https://github.com/shadowsocks/v2ray-plugin/releases "скачать v2ray") c архитектурой windows amd64.
 <br> `Внимание!` файл плагина должен быть в папке с клиентом!
@@ -405,13 +408,20 @@ Nov 23 20:44:29 server name systemd[1]: Starting A high performance web server a
    * `Encryption` - метод шифрования из файла конфигурации shadowsocks-rust.json
    * `Plugin Programm` - имя файл плагина v2ray скачанного в папку с shadowsocks for windows, без расширения!
    * `Plugin options` - `tls;fast-open;path=/парольная фраза из блока location в файле default;host=example.com`
+ 
  Далее ОК и меню **System-Proxy** выбрать **Global**
- При настройку Global весь траффик устройства идет через shadowsocks, для проксирования отдельных ресурсов можно использовать PAC файл например [отсюда](https://4pda.to/forum/index.php?s=&showtopic=744431&view=findpost&p=118717912).
- * :two: Настройка `shadowsocks для android`
+ <br>При настройке Global весь траффик устройства идет через shadowsocks, для проксирования отдельных ресурсов можно использовать PAC файл например [отсюда](https://4pda.to/forum/index.php?s=&showtopic=744431&view=findpost&p=118717912).
+ </details>
+ 
+ <details>
+ 
+   <summary> :two: Настройка `shadowsocks для android`</summary>
+   
  * Необходимо скачать [Shadowsocks for android из Play store](https://4pda.to/forum/index.php?s=&showtopic=744431&view=findpost&p=118717912 "скачать")
  * Необходимо скачать [плагин v2ray](https://play.google.com/store/apps/details?id=com.github.shadowsocks.plugin.v2ray "скачать")
  * В приложении **Shadowsocks for windows** во вкладке **Серверы** нажать **Поделится Профилем**
  * В приложении **Shadowsocks for android** в Профили нажать + и считать камерой `QR` код из приложения под windows, сохранить профиль.
  Более подробно про настройки приложения под андроид можно прочитать в профилной ветке [4pda](https://4pda.to/forum/index.php?showtopic=744431)
 
+ </details>
  
